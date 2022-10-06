@@ -90,6 +90,7 @@ func FuncMap() []template.FuncMap {
 			},
 
 			"DateFmtMail":      DateFmtMail,
+			"DateFmtMailShort": DateFmtMailShort,
 			"DateInt64FmtMail": DateInt64FmtMail,
 
 			"FilenameIsImage": func(filename string) bool {
@@ -130,27 +131,34 @@ func EscapePound(str string) string {
 
 func DateFmtMail(t time.Time, lang string) string {
 	n := time.Now()
+	var cstSh, _ = time.LoadLocation(conf.Database.Timezone)
 
-	in := t.Format("2006-01-02")
-	now := n.Format("2006-01-02")
+	in := t.In(cstSh).Format("2006-01-02")
+	now := n.In(cstSh).Format("2006-01-02")
 
 	if in == now {
-		return t.Format("15:04")
+		return t.In(cstSh).Format("15:04")
 	}
 	in2, _ := time.Parse("2006-01-02 15:04:05", in+" 00:00:00")
 	now2, _ := time.Parse("2006-01-02 15:04:05", now+" 00:00:00")
 	if in2.Unix()+86400 == now2.Unix() {
 		return i18n.Tr(lang, "common.yesterday")
 	} else {
-		return t.Format("2006-01-02")
+		return t.In(cstSh).Format("2006-01-02")
 	}
+}
+
+func DateFmtMailShort(t time.Time) string {
+	var cstSh, _ = time.LoadLocation(conf.Database.Timezone)
+	return t.In(cstSh).Format("2006-01-02 15:04:05")
 }
 
 func DateInt64FmtMail(t int64, lang string) string {
 	n := time.Now()
+	var cstSh, _ = time.LoadLocation(conf.Database.Timezone)
 
-	in := time.Unix(t, 0).Format("2006-01-02")
-	now := n.Format("2006-01-02")
+	in := time.Unix(t, 0).In(cstSh).Format("2006-01-02")
+	now := n.In(cstSh).Format("2006-01-02")
 
 	if in == now {
 		return time.Unix(t, 0).Format("15:04")
@@ -160,6 +168,6 @@ func DateInt64FmtMail(t int64, lang string) string {
 	if in2.Unix()+86400 == now2.Unix() {
 		return i18n.Tr(lang, "common.yesterday")
 	} else {
-		return time.Unix(t, 0).Format("2006-01-02")
+		return time.Unix(t, 0).In(cstSh).Format("2006-01-02")
 	}
 }

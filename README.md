@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="imail logo" src="https://avatars2.githubusercontent.com/u/4169529?v=3&s=200" height="140" />
+  <img alt="logo" src="https://avatars2.githubusercontent.com/u/4169529?v=3&s=200" height="140" />
   <h3 align="center">imail</h3>
   <p align="center">imail 是一款极易搭建的自助邮件服务。</p>
 </p>
@@ -27,10 +27,14 @@ imail项目旨在打造一个以最简便的方式搭建简单、稳定的邮件
 
 ## 版本详情
 
-- 0.0.14
+- 0.0.17
 
 ```
-* 初始化配置文件优化
+* 增加修改管理员修改密码功能.
+* 优化日志显示.
+* initd 改为systemd.
+* 修复初始化无法登录的现象.
+* ssl功能优化.
 ```
 
 ## Wiki

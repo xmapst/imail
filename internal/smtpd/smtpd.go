@@ -133,6 +133,8 @@ type Peer struct {
 }
 
 type SmtpdServer struct {
+	Port int
+
 	method            int
 	isLogin           bool
 	conn              net.Conn
@@ -207,13 +209,12 @@ func (smtp *SmtpdServer) D(format string, args ...interface{}) {
 	info := fmt.Sprintf(format, args...)
 	info = strings.TrimSpace(info)
 
-	if smtp.LinkSSL {
-		log.Debugf("[SSL]:%s", info)
-		return
-	}
-
 	if conf.Smtp.Debug {
 		log.Debug(info)
+
+		if smtp.LinkSSL {
+			log.Debugf("[SSL][%d]:%s", smtp.Port, info)
+		}
 	}
 }
 
@@ -240,7 +241,7 @@ func (smtp *SmtpdServer) getString(state int) (string, error) {
 	}
 
 	inputTrim := strings.TrimSpace(input)
-	smtp.D("smtpd[r][%s]:%s", smtp.peer.Addr, inputTrim)
+	smtp.D("smtpd[r][%s][%d]:%s", smtp.peer.Addr, smtp.Port, inputTrim)
 	return inputTrim, err
 
 }
@@ -289,7 +290,6 @@ func (smtp *SmtpdServer) cmdEhlo(input string) bool {
 			if smtp.enableStartTtls {
 				smtp.w(fmt.Sprintf("250-STARTTLS%s", GO_EOL))
 			}
-
 			smtp.w(fmt.Sprintf("250-SIZE 73400320%s", GO_EOL))
 			smtp.w(fmt.Sprintf("250 8BITMIME%s", GO_EOL))
 			return true
@@ -326,7 +326,7 @@ func (smtp *SmtpdServer) cmdAuthLoginUser(input string) bool {
 	user := smtp.base64Decode(input)
 	smtp.loginUser = user
 
-	smtp.D("smtpd[user]:%s", smtp.loginUser)
+	smtp.D("[smtpd][user]:%s", smtp.loginUser)
 	smtp.write(MSG_AUTH_LOGIN_PWD)
 	return true
 }
@@ -343,7 +343,7 @@ func (smtp *SmtpdServer) cmdAuthLoginPwd(input string) bool {
 	smtp.write(MSG_AUTH_FAIL)
 
 	//fail log to db
-	info := fmt.Sprintf("[smtp]user[%s]:%.3s %s%s", smtp.loginUser, MSG_AUTH_FAIL, msgList[MSG_AUTH_FAIL], GO_EOL)
+	info := fmt.Sprintf("[smtpd]user[%s]:%.3s %s%s", smtp.loginUser, MSG_AUTH_FAIL, msgList[MSG_AUTH_FAIL], GO_EOL)
 	db.LogAdd("auth_plain_login", info)
 	return false
 }
@@ -674,7 +674,7 @@ func (smtp *SmtpdServer) handle() {
 		input, err := smtp.getString(state)
 
 		if err != nil {
-			smtp.D("smtp: %s", err)
+			smtp.D("[smtpd][getString] error: %s", err)
 			smtp.write(MSG_COMMAND_TM_CTC)
 			smtp.close()
 			break
@@ -787,19 +787,28 @@ func (smtp *SmtpdServer) handle() {
 	}
 }
 
-func (smtp *SmtpdServer) initTLSConfig() {
+func (smtp *SmtpdServer) initTLSConfigBk() {
 	smtp.TLSConfig = tools.InitAutoMakeTLSConfig()
+}
+
+func (smtp *SmtpdServer) initTLSConfig() {
+	smtp.TLSConfig = tools.InitAutoMakeTLSConfigWithArgs(conf.Ssl.CertFile, conf.Ssl.KeyFile)
 }
 
 func (smtp *SmtpdServer) ready() {
 
+	if conf.Ssl.Enable {
+		smtp.enableStartTtls = true
+		smtp.D("[smtpd][ready][ssl]: start")
+	}
+
 	if smtp.LinkSSL {
 		smtp.initTLSConfig()
+
 	}
 
 	smtp.startTime = time.Now()
 	smtp.isLogin = false
-	smtp.enableStartTtls = true
 
 	//mode
 	smtp.runModeIn = false
@@ -838,11 +847,12 @@ func (smtp *SmtpdServer) start(conn net.Conn) {
 }
 
 func (smtp *SmtpdServer) StartPort(port int) {
+	smtp.Port = port
 	smtp.ready()
 	addr := fmt.Sprintf(":%d", port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		smtp.D("StartPort:%s", err)
+		smtp.D("[smtp] start port: %s", err)
 		return
 	}
 	defer ln.Close()
@@ -858,11 +868,12 @@ func (smtp *SmtpdServer) StartPort(port int) {
 
 func (smtp *SmtpdServer) StartSSLPort(port int) {
 	smtp.LinkSSL = true
+	smtp.Port = port
 	smtp.ready()
 	addr := fmt.Sprintf(":%d", port)
 	ln, err := tls.Listen("tcp", addr, smtp.TLSConfig)
 	if err != nil {
-		smtp.D("[smtp]StartSSLPort:%s", err)
+		smtp.D("[smtp]start ssl port: %s", err)
 		return
 	}
 	defer ln.Close()

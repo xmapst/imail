@@ -7,7 +7,7 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 # brew install mingw-w64
 # sudo port install mingw-w64
 
-VERSION=0.0.14
+VERSION=0.0.17
 curPath=`pwd`
 rootPath=$(dirname "$curPath")
 
@@ -104,11 +104,13 @@ build_app(){
 	fi
 	
 
-	cp -r $rootPath/scripts $rootPath/tmp/build
-	cp -r $rootPath/LICENSE $rootPath/tmp/build
-	cp -r $rootPath/README.md $rootPath/tmp/build
+	cp -rf $rootPath/scripts $rootPath/tmp/build
+	cp -rf $rootPath/LICENSE $rootPath/tmp/build
+	cp -rf $rootPath/README.md $rootPath/tmp/build
+	cp -rf $rootPath/conf $rootPath/tmp/build
 
 	cd $rootPath/tmp/build && xattr -c * && rm -rf ./*/.DS_Store && rm -rf ./*/*/.DS_Store
+	cd $rootPath/tmp/build && rm -rf ./conf/app.conf && rm -rf ./conf/locale
 
 
 	if [ $1 == "windows" ];then
@@ -134,6 +136,6 @@ build_app linux 386
 build_app linux arm64
 build_app linux arm
 build_app darwin amd64
-build_app windows 386
-build_app windows amd64
+# build_app windows 386
+# build_app windows amd64
 

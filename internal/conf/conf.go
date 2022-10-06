@@ -12,7 +12,6 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
 
-	// "github.com/midoks/imail/internal/log"
 	"github.com/midoks/imail/internal/assets/conf"
 	"github.com/midoks/imail/internal/tools"
 )
@@ -155,6 +154,13 @@ func Init(customConf string) error {
 	// ***************************
 	if err = File.Section("rspamd").MapTo(&Rspamd); err != nil {
 		return errors.Wrap(err, "mapping [rspamd] section")
+	}
+
+	// ***************************
+	// ----- Ssl settings -----
+	// ***************************
+	if err = File.Section("ssl").MapTo(&Ssl); err != nil {
+		return errors.Wrap(err, "mapping [ssl] section")
 	}
 
 	// *****************************

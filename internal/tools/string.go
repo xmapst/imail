@@ -193,6 +193,8 @@ func SizeFormat(size float64) string {
 }
 
 func RandString(len int) string {
+	rand.Seed(time.Now().UnixNano())
+
 	bytes := make([]byte, len)
 	for i := 0; i < len; i++ {
 		b := rand.Intn(26) + 65
@@ -238,10 +240,15 @@ func WriteFile(file string, content string) error {
 	return ioutil.WriteFile(file, []byte(content), os.ModePerm)
 }
 
-func ReadFile(file string) (string, error) {
+func ReadFileByte(file string) ([]byte, error) {
 	f, err := os.OpenFile(file, os.O_RDONLY, 0600)
 	defer f.Close()
 	b, err := ioutil.ReadAll(f)
+	return b, err
+}
+
+func ReadFile(file string) (string, error) {
+	b, err := ReadFileByte(file)
 	return string(b), err
 }
 

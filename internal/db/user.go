@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	// "fmt"
 	"strings"
 	"time"
 
@@ -26,23 +26,9 @@ type User struct {
 	UpdatedUnix int64     `gorm:"autoCreateTime;comment:更新时间"`
 }
 
-// type ErrUserAlreadyExist struct {
-// 	args map[string]interface{}
-// }
-
 func (User) TableName() string {
 	return TablePrefix("users")
 }
-
-// func IsErrUserAlreadyExist(err error) bool {
-// 	_, ok := err.(ErrUserAlreadyExist)
-// 	return ok
-// }
-
-// func IsErrEmailAlreadyUsed(err error) bool {
-// 	_, ok := err.(ErrEmailAlreadyUsed)
-// 	return ok
-// }
 
 func (u *User) ValidPassword(oldPwd string) bool {
 	inputPwd := tools.Md5(tools.Md5(oldPwd) + u.Salt)
@@ -69,6 +55,7 @@ func CreateUser(u *User) (err error) {
 
 func UserUpdater(u *User) error {
 	r := db.Model(&User{}).Where("id = ?", u.Id).Save(u)
+	// fmt.Println("UserUpdater", r)
 	return r.Error
 }
 
@@ -141,7 +128,6 @@ func LoginWithCode(name string, code string) (bool, int64) {
 }
 
 func LoginByUserPassword(name string, password string) (bool, int64) {
-	fmt.Println("name", name)
 	var u User
 	err := db.First(&u, "name = ?", name).Error
 
@@ -150,8 +136,6 @@ func LoginByUserPassword(name string, password string) (bool, int64) {
 	}
 
 	inputPwd := tools.Md5(tools.Md5(password) + u.Salt)
-
-	// fmt.Println(password, inputPwd, u.Password)
 	if inputPwd == u.Password {
 		return true, u.Id
 	}

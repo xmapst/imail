@@ -13,7 +13,7 @@ import (
 	"github.com/midoks/imail/internal/tools/syscall"
 )
 
-const Version = "0.0.14"
+const Version = "0.0.17"
 const AppName = "imail"
 
 //go:embed templates
@@ -49,7 +49,9 @@ func main() {
 	app.Usage = "A simple mail service"
 	app.Commands = []cli.Command{
 		cmd.Service,
+		cmd.Reset,
 		cmd.Dkim,
+		cmd.Cert,
 		cmd.Check,
 	}
 

@@ -1,9 +1,11 @@
 package user
 
 import (
+	// "fmt"
 	"net/url"
 
 	"github.com/go-macaron/captcha"
+
 	"github.com/midoks/imail/internal/app/context"
 	"github.com/midoks/imail/internal/app/form"
 	"github.com/midoks/imail/internal/conf"
@@ -52,8 +54,8 @@ func AutoLogin(c *context.Context) (bool, error) {
 		}
 
 		isSucceed = true
-		_ = c.Session.Set("uid", u.Id)
-		_ = c.Session.Set("uname", u.Name)
+		c.Session.Set("uid", u.Id)
+		c.Session.Set("uname", u.Name)
 		c.SetCookie(conf.Session.CSRFCookieName, "", -1, conf.Web.Subpath)
 		if conf.Security.EnableLoginStatusCookie {
 			c.SetCookie(conf.Security.LoginStatusCookieName, "true", 0, conf.Web.Subpath)
@@ -97,6 +99,7 @@ func LoginPost(c *context.Context, f form.SignIn) {
 	c.Title("sign_in")
 
 	loginBool, uid := db.LoginByUserPassword(f.UserName, f.Password)
+
 	if !loginBool {
 		c.FormErr("UserName", "Password")
 		c.RenderWithErr(c.Tr("form.username_password_incorrect"), LOGIN, &f)
@@ -121,8 +124,9 @@ func LoginPost(c *context.Context, f form.SignIn) {
 		c.SetSuperSecureCookie(u.Salt+u.Password, conf.Security.CookieRememberName, u.Name, days, conf.Web.Subpath, "", conf.Security.CookieSecure, true)
 	}
 
-	_ = c.Session.Set("uid", uid)
-	_ = c.Session.Set("uname", f.UserName)
+	// session.Start(c)
+	c.Session.Set("uid", uid)
+	c.Session.Set("uname", f.UserName)
 
 	// Clear whatever CSRF has right now, force to generate a new one
 	c.SetCookie(conf.Session.CSRFCookieName, "", -1, conf.Web.Subpath)
@@ -132,6 +136,7 @@ func LoginPost(c *context.Context, f form.SignIn) {
 
 	redirectTo, _ := url.QueryUnescape(c.GetCookie("redirect_to"))
 	c.SetCookie("redirect_to", "", -1, conf.Web.Subpath)
+
 	if tools.IsSameSiteURLPath(redirectTo) {
 		c.Redirect(redirectTo)
 		return

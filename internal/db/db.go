@@ -3,6 +3,7 @@ package db
 import (
     "database/sql"
     "fmt"
+    "log"
     "os"
     "path/filepath"
     "strings"
@@ -12,9 +13,10 @@ import (
     "gorm.io/driver/mysql"
     "gorm.io/driver/sqlite"
     "gorm.io/gorm"
+    "gorm.io/gorm/logger"
 
     "github.com/midoks/imail/internal/conf"
-    "github.com/midoks/imail/internal/log"
+    imlog "github.com/midoks/imail/internal/log"
 )
 
 var (
@@ -29,6 +31,16 @@ var Tables = []interface{}{
 }
 
 func getEngine() (*sql.DB, error) {
+
+    newLogger := logger.New(
+        log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+        logger.Config{
+            SlowThreshold: time.Second,   // 慢 SQL 阈值
+            LogLevel:      logger.Silent, // Log level
+            Colorful:      false,         // 禁用彩色打印
+        },
+    )
+
     switch conf.Database.Type {
     case "mysql":
         dbUser := conf.Database.User
@@ -39,7 +51,9 @@ func getEngine() (*sql.DB, error) {
         dbCharset := conf.Database.Charset
 
         dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=True", dbUser, dbPwd, dbHost, dbName, dbCharset)
-        db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+        db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+            Logger: newLogger,
+        })
 
     case "sqlite3":
         os.MkdirAll(conf.Web.AppDataPath, os.ModePerm)
@@ -47,8 +61,11 @@ func getEngine() (*sql.DB, error) {
         if strings.EqualFold(conf.Database.Path, "data/imail.db3") {
             dbPath = filepath.Dir(conf.Web.AppDataPath) + "/" + conf.Database.Path
         }
-        db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{SkipDefaultTransaction: true, PrepareStmt: true})
-        //&gorm.Config{SkipDefaultTransaction: true,}
+        db, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{
+            Logger:                 newLogger,
+            SkipDefaultTransaction: true,
+            PrepareStmt:            true,
+        })
 
         // synchronous close
         db.Exec("PRAGMA synchronous = OFF;")
@@ -57,19 +74,23 @@ func getEngine() (*sql.DB, error) {
     }
 
     if err != nil {
-        log.Errorf("init db err,link error:%s", err)
+        imlog.Errorf("init db err,link error:%s", err)
         return nil, err
     }
 
     sqlDB, err := db.DB()
     if err != nil {
-        log.Errorf("[DB]:%s", err)
+        imlog.Errorf("[DB]:%s", err)
         return nil, err
     }
 
     sqlDB.SetMaxIdleConns(conf.Database.MaxIdleConns)
     sqlDB.SetMaxOpenConns(conf.Database.MaxOpenConns)
     sqlDB.SetConnMaxLifetime(time.Hour)
+
+    if !conf.IsProdMode() {
+        db.Debug()
+    }
 
     return sqlDB, nil
 }

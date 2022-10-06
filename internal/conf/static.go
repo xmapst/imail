@@ -139,6 +139,14 @@ var (
 		RecjectConditionScore float64
 	}
 
+	//ssl
+	Ssl struct {
+		Enable   bool
+		Debug    bool
+		CertFile string
+		KeyFile  string
+	}
+
 	//Hook
 	Hook struct {
 		Enable        bool
@@ -178,6 +186,7 @@ type DatabaseOpts struct {
 	Path         string
 	Prefix       string
 	Charset      string
+	Timezone     string
 	MaxOpenConns int
 	MaxIdleConns int
 }

@@ -181,6 +181,8 @@ func Contexter() macaron.Handler {
 			Session: sess,
 		}
 
+		ctx.Map(c)
+
 		c.Data["NowLang"] = l.Lang
 		c.Data["PageStartTime"] = time.Now()
 
@@ -193,6 +195,8 @@ func Contexter() macaron.Handler {
 
 		// Get user from session or header when possible
 		uid := c.Session.Get("uid")
+
+		// fmt.Println("ready[uid]:", uid)
 		if uid != nil {
 			u, err := db.UserGetById(uid.(int64))
 			if err == nil {
@@ -213,8 +217,11 @@ func Contexter() macaron.Handler {
 
 		c.Data["CSRFToken"] = x.GetToken()
 		c.Data["CSRFTokenHTML"] = template.Safe(`<input type="hidden" name="_csrf" value="` + x.GetToken() + `">`)
-		log.Debugf("Session ID: %s", sess.ID())
-		log.Debugf("CSRF Token: %s", c.Data["CSRFToken"])
+
+		if !conf.IsProdMode() {
+			log.Debugf("Session ID: %s", sess.ID())
+			log.Debugf("CSRF Token: %s", c.Data["CSRFToken"])
+		}
 
 		c.Data["ShowRegistrationButton"] = !conf.Auth.DisableRegistration
 		// c.Data["ShowFooterBranding"] = conf.Other.ShowFooterBranding
@@ -225,6 +232,5 @@ func Contexter() macaron.Handler {
 		c.Header().Set("X-Content-Type-Options", "nosniff")
 		c.Header().Set("X-Frame-Options", "DENY")
 
-		ctx.Map(c)
 	}
 }

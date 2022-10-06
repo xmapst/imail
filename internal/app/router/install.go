@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
@@ -32,23 +33,25 @@ func startService(name string) {
 
 	if strings.EqualFold(name, "smtpd") && conf.Smtp.Enable {
 		go smtpd.Start(conf.Smtp.Port)
+		log.Infof("listen %s success!", name)
 	} else if strings.EqualFold(name, "pop3") && conf.Pop3.Enable {
 		go pop3.Start(conf.Pop3.Port)
+		log.Infof("listen %s success!", name)
 	} else if strings.EqualFold(name, "imap") && conf.Imap.Enable {
 		go imap.Start(conf.Imap.Port)
+		log.Infof("listen %s success!", name)
 	}
 
-	log.Infof("listen %s success!", name)
-
-	if strings.EqualFold(name, "smtpd") && conf.Smtp.SslEnable {
+	if strings.EqualFold(name, "smtpd") && conf.Smtp.SslEnable && conf.Ssl.Enable {
 		go smtpd.StartSSL(conf.Smtp.SslPort)
-	} else if strings.EqualFold(name, "pop3") && conf.Pop3.SslEnable {
+		log.Infof("listen %s ssl success!", name)
+	} else if strings.EqualFold(name, "pop3") && conf.Pop3.SslEnable && conf.Ssl.Enable {
 		go pop3.StartSSL(conf.Pop3.SslPort)
-	} else if strings.EqualFold(name, "imap") && conf.Imap.SslEnable {
+		log.Infof("listen %s ssl success!", name)
+	} else if strings.EqualFold(name, "imap") && conf.Imap.SslEnable && conf.Ssl.Enable {
 		go imap.StartSSL(conf.Imap.SslPort)
+		log.Infof("listen %s ssl success!", name)
 	}
-
-	log.Infof("listen %s ssl success!", name)
 
 }
 
@@ -71,15 +74,6 @@ func GlobalInit(customConf string) error {
 
 	log.Init()
 
-	// format := conf.Log.Format
-	// if strings.EqualFold(format, "json") {
-	// 	logger.SetFormatter(&logrus.JSONFormatter{})
-	// } else if strings.EqualFold(format, "text") {
-	// 	logger.SetFormatter(&logrus.TextFormatter{})
-	// } else {
-	// 	logger.SetFormatter(&logrus.TextFormatter{})
-	// }
-
 	if !strings.EqualFold(conf.App.RunMode, "prod") {
 		go debug.Pprof()
 	}
@@ -99,6 +93,24 @@ func GlobalInit(customConf string) error {
 	if !conf.Security.InstallLock {
 		return nil
 	}
+
+	return nil
+}
+
+func GlobalCmdInit(customConf string) error {
+
+	err := conf.Init(customConf)
+	if err != nil {
+		return errors.Wrap(err, "init configuration")
+	}
+
+	log.Init()
+	if !conf.Security.InstallLock {
+		return nil
+	}
+
+	db.Init()
+	task.Init()
 
 	return nil
 }
@@ -266,6 +278,10 @@ func InstallPost(c *context.Context, f form.Install) {
 	cfg.Section("session").Key("provider").SetValue("file")
 	cfg.Section("session").Key("cookie_secure").SetValue("false")
 
+	cfg.Section("ssl").Key("enable").SetValue("false")
+	cfg.Section("ssl").Key("cert_file").SetValue("custom/ssl/cert.pem")
+	cfg.Section("ssl").Key("key_file").SetValue("custom/ssl/key.pem")
+
 	cfg.Section("auth").Key("disable_registration").SetValue("true")
 
 	mode := "file"
@@ -286,6 +302,8 @@ func InstallPost(c *context.Context, f form.Install) {
 		c.RenderWithErr(c.Tr("install.save_config_failed", err), INSTALL, &f)
 		return
 	}
+
+	time.Sleep(time.Duration(100) * time.Millisecond)
 
 	// NOTE: We reuse the current value because this handler does not have access to CLI flags.
 	if err := GlobalInit(conf.CustomConf); err != nil {
@@ -312,11 +330,12 @@ func InstallPost(c *context.Context, f form.Install) {
 		return
 	}
 
+	// Auto-login for admin
+	c.Session.Set("uid", u.Id)
+	c.Session.Set("uname", u.Name)
+
 	log.Info("first-time run install finished!")
 	c.Flash.Success(c.Tr("install.install_success"))
-	// Auto-login for admin
-	_ = c.Session.Set("uid", u.Id)
-	_ = c.Session.Set("uname", u.Name)
 
 	c.Redirect("/user/login")
 }
