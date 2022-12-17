@@ -49,9 +49,24 @@ service imail restart
 
 cd $TAGRT_DIR/imail && ./imail -v
 
+if [ ! -d /usr/local/go ];then
+	wget https://golang.google.cn/dl/go1.19.1.linux-amd64.tar.gz
+	tar -xvf go1.19.1.linux-amd64.tar.gz
+	mv go /usr/local/
+fi
 # Debug Now
-export PATH=$PATH:/root/go/bin
+export PATH=/usr/local/go:$PATH:/root/go/bin
 export GOPATH=/root/go
+
+if [ ! -f /root/go/bin/zzz ];then
+	go install github.com/midoks/zzz@latest
+fi
+
+if [ ! -f /root/go/bin/go-bindata ];then
+	go install github.com/go-bindata/go-bindatalatest
+fi
+
+
 service imail stop
 cd /usr/local/imail_dev/imail && bash zzz.sh
 
