@@ -23,10 +23,10 @@ require (
 	github.com/stretchr/testify v1.8.1
 	github.com/unknwon/i18n v0.0.0-20210904045753-ff3a8617e361
 	github.com/urfave/cli v1.22.12
-	golang.org/x/text v0.6.0
+  golang.org/x/text v0.9.0
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/macaron.v1 v1.4.0
-	gorm.io/driver/mysql v1.4.5
+	gorm.io/driver/mysql v1.5.0
 	gorm.io/driver/sqlite v1.4.4
-	gorm.io/gorm v1.24.3
+	gorm.io/gorm v1.25.0
 )
