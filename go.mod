@@ -14,6 +14,7 @@ require (
 	github.com/go-macaron/session v1.0.2
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/jarcoal/httpmock v1.3.0
+	github.com/jarcoal/httpmock v1.3.1
 	github.com/json-iterator/go v1.1.12
 	github.com/microcosm-cc/bluemonday v1.0.25
 	github.com/midoks/mcopa v0.0.0-20220101182214-c193ea891591
@@ -23,10 +24,10 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/unknwon/i18n v0.0.0-20210904045753-ff3a8617e361
 	github.com/urfave/cli v1.22.14
-	golang.org/x/text v0.13.0
+	golang.org/x/text v0.14.0
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/macaron.v1 v1.5.0
 	gorm.io/driver/mysql v1.5.1
-	gorm.io/driver/sqlite v1.5.2
-	gorm.io/gorm v1.25.4
+	gorm.io/driver/sqlite v1.5.4
+  gorm.io/gorm v1.25.5
 )
