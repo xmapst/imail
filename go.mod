@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
-	github.com/editorconfig/editorconfig-core-go/v2 v2.5.2
+	github.com/editorconfig/editorconfig-core-go/v2 v2.6.0
 	github.com/go-macaron/binding v1.2.0
 	github.com/go-macaron/cache v0.0.0-20200329073519-53bb48172687
 	github.com/go-macaron/captcha v0.2.0
@@ -13,7 +13,6 @@ require (
 	github.com/go-macaron/i18n v0.6.0
 	github.com/go-macaron/session v1.0.2
 	github.com/go-resty/resty/v2 v2.11.0
-	github.com/jarcoal/httpmock v1.3.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/json-iterator/go v1.1.12
 	github.com/microcosm-cc/bluemonday v1.0.25
@@ -29,5 +28,5 @@ require (
 	gopkg.in/macaron.v1 v1.5.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/sqlite v1.5.4
-  gorm.io/gorm v1.25.5
+	gorm.io/gorm v1.25.5
 )
