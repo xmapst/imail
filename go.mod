@@ -13,7 +13,6 @@ require (
 	github.com/go-macaron/i18n v0.6.0
 	github.com/go-macaron/session v1.0.2
 	github.com/go-resty/resty/v2 v2.11.0
-	github.com/jarcoal/httpmock v1.3.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/json-iterator/go v1.1.12
 	github.com/microcosm-cc/bluemonday v1.0.25
@@ -29,5 +28,5 @@ require (
 	gopkg.in/macaron.v1 v1.5.0
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/driver/sqlite v1.5.4
-  gorm.io/gorm v1.25.5
+	gorm.io/gorm v1.25.7
 )
