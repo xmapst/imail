@@ -12,7 +12,7 @@ require (
 	github.com/go-macaron/gzip v0.0.0-20200329073552-98214d7a897e
 	github.com/go-macaron/i18n v0.6.0
 	github.com/go-macaron/session v1.0.2
-	github.com/go-resty/resty/v2 v2.11.0
+	github.com/go-resty/resty/v2 v2.13.1
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/json-iterator/go v1.1.12
 	github.com/microcosm-cc/bluemonday v1.0.26
@@ -23,7 +23,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/unknwon/i18n v0.0.0-20210904045753-ff3a8617e361
 	github.com/urfave/cli v1.22.15
-	golang.org/x/text v0.14.0
+	golang.org/x/text v0.15.0
 	gopkg.in/ini.v1 v1.67.0
 	gopkg.in/macaron.v1 v1.5.0
 	gorm.io/driver/mysql v1.5.6
