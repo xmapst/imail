@@ -25,7 +25,7 @@ require (
 	github.com/urfave/cli v1.22.15
 	golang.org/x/text v0.16.0
 	gopkg.in/ini.v1 v1.67.0
-	gopkg.in/macaron.v1 v1.4.0
+	gopkg.in/macaron.v1 v1.5.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/driver/sqlite v1.5.6
 	gorm.io/gorm v1.25.7
