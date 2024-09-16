@@ -116,8 +116,8 @@ github.com/go-macaron/session v0.0.0-20190805070824-1a3cdc6f5659/go.mod h1:tLd0Q
 github.com/go-macaron/session v1.0.2 h1:mP6K4FweVzq6VpQpHbMhNWd1si80HJwFZhxNVpqas6w=
 github.com/go-macaron/session v1.0.2/go.mod h1:kEa+q2raCWCvvaN8pMbyCtp9Mg/37J6zKah2iOKEass=
 github.com/go-redis/redis/v8 v8.4.0/go.mod h1:A1tbYoHSa1fXwN+//ljcCYYJeLmVrwL9hbQN45Jdy0M=
-github.com/go-resty/resty/v2 v2.14.0 h1:/rhkzsAqGQkozwfKS5aFAbb6TyKd3zyFRWcdRXLPCAU=
-github.com/go-resty/resty/v2 v2.14.0/go.mod h1:IW6mekUOsElt9C7oWr0XRt9BNSD6D5rr9mhk6NjmNHg=
+github.com/go-resty/resty/v2 v2.15.0 h1:clPQLZ2x9h4yGY81IzpMPnty+xoGyFaDg0XMkCsHf90=
+github.com/go-resty/resty/v2 v2.15.0/go.mod h1:0fHAoK7JoBy/Ch36N8VFeMsK7xQOHhvWaC3iOktwmIU=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/go-sql-driver/mysql v1.5.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-sql-driver/mysql v1.7.0 h1:ueSltNNllEqE3qcWBTD0iQd3IpL/6U+mJxLkazJ7YPc=

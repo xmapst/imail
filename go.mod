@@ -12,7 +12,7 @@ require (
 	github.com/go-macaron/gzip v0.0.0-20200329073552-98214d7a897e
 	github.com/go-macaron/i18n v0.6.0
 	github.com/go-macaron/session v1.0.2
-	github.com/go-resty/resty/v2 v2.14.0
+	github.com/go-resty/resty/v2 v2.15.0
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/json-iterator/go v1.1.12
 	github.com/microcosm-cc/bluemonday v1.0.27
